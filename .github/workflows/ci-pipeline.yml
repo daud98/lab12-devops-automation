@@ -1,4 +1,4 @@
-name: Production CI Platform Pipeline
+name: Build and Publish Production Artifacts
 
 on:
   push:
