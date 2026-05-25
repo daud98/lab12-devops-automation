@@ -1,0 +1,20 @@
+{
+  "name": "devops-lab-app",
+  "version": "1.0.0",
+  "description": "A simple Node.js application for Lab 12 DevOps Automation",
+  "main": "dist/server.js",
+  "scripts": {
+    "init-clean": "rm -rf dist && mkdir dist",
+    "build": "npm run init-clean && cp src/server.js dist/server.js",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

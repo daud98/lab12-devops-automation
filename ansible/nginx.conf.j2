@@ -1,0 +1,14 @@
+# Managed automatically via active Ansible Playbook deployments
+server {
+    listen {{ web_server_port }} default_server;
+    listen [::]:{{ web_server_port }} default_server;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}

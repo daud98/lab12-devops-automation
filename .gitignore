@@ -1,0 +1,12 @@
+node-modules/
+npm-debug.log
+dist/
+
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+mock_aws_instance.txt
+
+.env
+.env.local

@@ -1,0 +1,4 @@
+ID: i-0abc123def456
+Status: Running
+Public_IP: 127.0.0.1
+Type: t2.micro

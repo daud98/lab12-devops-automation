@@ -1,0 +1,43 @@
+---
+- name: Apply Base Web Infrastructure State
+  hosts: webservers
+  become: true
+  gather_facts: true
+
+  vars:
+    app_user: webops
+    app_group: webops
+    web_server_port: 80
+
+  tasks:
+    - name: Ensure modern application system user group is established
+      ansible.builtin.group:
+        name: "{{ app_group }}"
+        state: present
+
+    - name: Instantiate isolated application execution account 
+      ansible.builtin.user:
+        name: "{{ app_user }}"
+        group: "{{ app_group }}"
+        shell: /bin/bash
+        create_home: true
+        state: present
+
+    - name: Update apt index maps and fetch core package binaries
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    - name: Dynamically generate tailored configuration structures
+      ansible.builtin.template:
+        src: ./nginx.conf.j2
+        dest: /etc/nginx/sites-available/default
+        mode: '0644'
+      notify: Trigger Nginx Soft Reload
+
+  handlers:
+    - name: Trigger Nginx Soft Reload
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
