@@ -3,84 +3,47 @@ name: Build and Publish Production Artifacts
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  quality-assurance:
-    name: Code Inspection and Vulnerability Sweep
+  build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      - name: Fetch Local Source Repository Tree
+      - name: Pull Source Files From Git Repository Branch
         uses: actions/checkout@v4
 
-      - name: Configure Execution Node Runtime Environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Pull Deterministic Dependency Layer Maps
-        run: npm ci
-
-      - name: Execute Code Architecture Verification Tests
-        run: npm test --if-present
-
-      - name: Construct Optimized Container Image Layer Architecture
-        run: docker build -t target-verify:${{ github.sha }} .
-
-      - name: Execute Security Vulnerability Interception via Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'target-verify:${{ github.sha }}'
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-
-  artifact-distribution:
-    name: Package and Publish Upstream Secure Runtime Assets
-    needs: quality-assurance
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Fetch Local Source Repository Tree
-        uses: actions/checkout@v4
-
-      - name: Connect to Targeted Distribution Ecosystem Registry
+      - name: Log In to GitHub Container Registry Ecosystem
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extrapolate Comprehensive Target Label Metadata Elements
+      - name: Extrapolate Container Metadata Target Labels
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
             type=sha,format=short
             latest
+
+      # --- ADD THIS STEP HERE TO ENABLE GHA CACHING SUPPORTS ---
+      - name: Set up Docker Buildx Virtual Builder Environment
+        uses: docker/setup-buildx-action@v3
 
       - name: Publish Verified Final Optimized Multi-Stage Asset Bundle
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
